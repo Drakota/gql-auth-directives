@@ -1,15 +1,16 @@
 import gql from "graphql-tag";
+
 import createPermissionDirective from "./directives/hasPermission";
 import createRoleDirective from "./directives/hasRole";
 import createAuthenticatedDirective from "./directives/isAuthenticated";
 
-interface IOptions {
+interface CreateAuthDirectiveOptions {
   hasPermissionHandler: (ctx: any, permissions: string[]) => void;
   hasRoleHandler: (ctx: any, roles: string[]) => void;
   isAuthenticatedHandler: (ctx: any) => void;
 }
 
-const createAuthDirectives = (options?: Partial<IOptions>): any => ({
+const createAuthDirectives = (options?: Partial<CreateAuthDirectiveOptions>): any => ({
   hasPermission: createPermissionDirective(options?.hasPermissionHandler),
   hasRole: createRoleDirective(options?.hasRoleHandler),
   isAuthenticated: createAuthenticatedDirective(options?.isAuthenticatedHandler),

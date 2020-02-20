@@ -1,0 +1,49 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Testing hasPermission directive with handler overriding should override the hasPermission default handler correctly and throw an error 1`] = `
+Array [
+  [GraphQLError: Permissions passed: FOO, BAR],
+]
+`;
+
+exports[`Testing hasPermission directive without handler overriding should allow accessing a mutation's input with necessary permissions 1`] = `
+Object {
+  "protectedMutation": "@MUTATION Input: foo Protected Input: bar",
+}
+`;
+
+exports[`Testing hasPermission directive without handler overriding should allow accessing a query with the necessary permissions 1`] = `
+Object {
+  "protectedQuery": "@QUERY Input: foo Protected Input: undefined",
+}
+`;
+
+exports[`Testing hasPermission directive without handler overriding should allow accessing a query's input with necessary permissions 1`] = `
+Object {
+  "protectedQuery": "@QUERY Input: foo Protected Input: bar",
+}
+`;
+
+exports[`Testing hasPermission directive without handler overriding should allow accessing another mutation's input that is not protected 1`] = `
+Object {
+  "protectedMutation": "@MUTATION Input: foo Protected Input: undefined",
+}
+`;
+
+exports[`Testing hasPermission directive without handler overriding should prevent accessing a mutation's input without necessary permissions 1`] = `
+Array [
+  [GraphQLError: Insufficient permissions. Missing one of these: PROTECTED_INPUT],
+]
+`;
+
+exports[`Testing hasPermission directive without handler overriding should prevent accessing a query without the necessary permissions 1`] = `
+Array [
+  [GraphQLError: Insufficient permissions. Missing one of these: PROTECTED_QUERY],
+]
+`;
+
+exports[`Testing hasPermission directive without handler overriding should prevent accessing a query's input without necessary permissions 1`] = `
+Array [
+  [GraphQLError: Insufficient permissions. Missing one of these: PROTECTED_INPUT],
+]
+`;

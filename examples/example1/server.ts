@@ -1,8 +1,9 @@
 import { ApolloServer, makeExecutableSchema } from "apollo-server-express";
 import express from "express";
+
 import { createAuthDirectives, authTypeDefs } from "../../dist";
-import typeDefs from "./schema";
 import resolvers from "./resolvers";
+import typeDefs from "./schema";
 
 const app = express();
 const authDirectives = createAuthDirectives();

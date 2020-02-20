@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Testing hasPermission directive without handler overriding should allow accessing a query with the necessary roles 1`] = `
+Object {
+  "protectedQuery": "Protected Query",
+}
+`;
+
+exports[`Testing hasPermission directive without handler overriding should prevent accessing a query without the necessary permissions 1`] = `
+Array [
+  [GraphQLError: Insufficient roles. Missing one of these: USER],
+]
+`;
