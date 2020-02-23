@@ -1,13 +1,37 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Testing hasPermission directive without handler overriding should allow accessing a query with the necessary roles 1`] = `
+exports[`Testing hasRole directive with handler overriding should override the hasRole default handler correctly and throw an error 1`] = `
+Array [
+  [GraphQLError: Roles passed: FOO, BAR],
+]
+`;
+
+exports[`Testing hasRole directive without handler overriding should allow accessing a mutation's input with necessary roles 1`] = `
 Object {
-  "protectedQuery": "Protected Query",
+  "protectedMutation": "@MUTATION Input: foo Protected Input: bar",
 }
 `;
 
-exports[`Testing hasPermission directive without handler overriding should prevent accessing a query without the necessary permissions 1`] = `
+exports[`Testing hasRole directive without handler overriding should allow accessing a query with the necessary roles 1`] = `null`;
+
+exports[`Testing hasRole directive without handler overriding should allow accessing a query's input with necessary roles 1`] = `undefined`;
+
+exports[`Testing hasRole directive without handler overriding should allow accessing another mutation's input that is not protected 1`] = `null`;
+
+exports[`Testing hasRole directive without handler overriding should prevent accessing a mutation's input without necessary roles 1`] = `
+Array [
+  [GraphQLError: Insufficient roles. Missing one of these: ADMIN],
+]
+`;
+
+exports[`Testing hasRole directive without handler overriding should prevent accessing a query without the necessary roles 1`] = `
 Array [
   [GraphQLError: Insufficient roles. Missing one of these: USER],
+]
+`;
+
+exports[`Testing hasRole directive without handler overriding should prevent accessing a query's input without necessary roles 1`] = `
+Array [
+  [ValidationError: Unknown argument "data" on field "protectedQuery" of type "Query".],
 ]
 `;

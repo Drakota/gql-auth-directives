@@ -5,7 +5,7 @@ import { createAuthDirectives } from "../src";
 import { getDecodedToken } from "../src/utils/getDecodedToken";
 import { createClient } from "./utils/createClient";
 
-describe("Testing hasPermission directive without handler overriding", () => {
+describe("Testing hasRole directive without handler overriding", () => {
   let client: ApolloServerTestClient;
 
   beforeAll(() => {
@@ -25,10 +25,12 @@ describe("Testing hasPermission directive without handler overriding", () => {
       `,
       resolvers: {
         Query: {
-          protectedQuery: () => "Protected Query",
+          protectedQuery: (parent, args) =>
+            `@QUERY Input: ${args.data.input} Protected Input: ${args.data.protectedInput}`,
         },
         Mutation: {
-          protectedMutation: (parent, args) => `Input: ${args.data.input} Protected Input: ${args.data.protectedInput}`,
+          protectedMutation: (parent, args) =>
+            `@MUTATION Input: ${args.data.input} Protected Input: ${args.data.protectedInput}`,
         },
       },
       schemaDirectives: {
@@ -50,8 +52,142 @@ describe("Testing hasPermission directive without handler overriding", () => {
     expect(res.data).toMatchSnapshot();
   });
 
-  it("should prevent accessing a query without the necessary permissions", async () => {
+  it("should prevent accessing a query without the necessary roles", async () => {
     (getDecodedToken as any) = jest.fn(() => ({ roles: ["ADMIN"] }));
+    const res = await client.query({
+      query: gql`
+        {
+          protectedQuery
+        }
+      `,
+    });
+
+    expect(res.errors).toMatchSnapshot();
+  });
+
+  it("should allow accessing a query's input with necessary roles", async () => {
+    (getDecodedToken as any) = jest.fn(() => ({ roles: ["USER"] }));
+    const res = await client.query({
+      query: gql`
+        query protectedQuery($data: TestInput!) {
+          protectedQuery(data: $data)
+        }
+      `,
+      variables: {
+        data: {
+          input: "foo",
+          protectedInput: "bar",
+        },
+      },
+    });
+
+    expect(res.data).toMatchSnapshot();
+  });
+
+  it("should prevent accessing a query's input without necessary roles", async () => {
+    (getDecodedToken as any) = jest.fn(() => ({ roles: ["INVALID_ROLE"] }));
+    const res = await client.query({
+      query: gql`
+        query protectedQuery($data: TestInput!) {
+          protectedQuery(data: $data)
+        }
+      `,
+      variables: {
+        data: {
+          input: "foo",
+          protectedInput: "bar",
+        },
+      },
+    });
+
+    expect(res.errors).toMatchSnapshot();
+  });
+
+  it("should allow accessing a mutation's input with necessary roles", async () => {
+    (getDecodedToken as any) = jest.fn(() => ({ roles: ["ADMIN"] }));
+    const res = await client.mutate({
+      mutation: gql`
+        mutation protectedMutation($data: TestInput!) {
+          protectedMutation(data: $data)
+        }
+      `,
+      variables: {
+        data: {
+          input: "foo",
+          protectedInput: "bar",
+        },
+      },
+    });
+
+    expect(res.data).toMatchSnapshot();
+  });
+
+  it("should prevent accessing a mutation's input without necessary roles", async () => {
+    (getDecodedToken as any) = jest.fn(() => ({ roles: ["INVALID_ROLE"] }));
+    const res = await client.mutate({
+      mutation: gql`
+        mutation protectedMutation($data: TestInput!) {
+          protectedMutation(data: $data)
+        }
+      `,
+      variables: {
+        data: {
+          input: "foo",
+          protectedInput: "bar",
+        },
+      },
+    });
+
+    expect(res.errors).toMatchSnapshot();
+  });
+
+  it("should allow accessing another mutation's input that is not protected", async () => {
+    (getDecodedToken as any) = jest.fn(() => ({ roles: ["INVALID_ROLE"] }));
+    const res = await client.mutate({
+      mutation: gql`
+        mutation protectedMutation($data: TestInput!) {
+          protectedMutation(data: $data)
+        }
+      `,
+      variables: {
+        data: {
+          input: "foo",
+        },
+      },
+    });
+
+    expect(res.data).toMatchSnapshot();
+  });
+});
+
+describe("Testing hasRole directive with handler overriding", () => {
+  let client: ApolloServerTestClient;
+
+  beforeAll(() => {
+    const authDirectives = createAuthDirectives({
+      hasRoleHandler: (ctx, roles) => {
+        throw new Error(`Roles passed: ${roles.join(", ")}`);
+      },
+    });
+    client = createClient({
+      typeDefs: gql`
+        type Query {
+          protectedQuery: String! @hasRole(roles: ["FOO", "BAR"])
+        }
+      `,
+      resolvers: {
+        Query: {
+          protectedQuery: () => "Protected Query",
+        },
+      },
+      schemaDirectives: {
+        ...authDirectives,
+      },
+    });
+  });
+
+  it("should override the hasRole default handler correctly and throw an error", async () => {
+    (getDecodedToken as any) = jest.fn(() => ({ roles: ["INVALID_ROLE"] }));
     const res = await client.query({
       query: gql`
         {
