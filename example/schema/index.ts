@@ -1,6 +1,12 @@
 import { gql } from "apollo-server-express";
 
 export default gql`
+  type User {
+    id: Int!
+    firstName: String!
+    lastName: String!
+  }
+
   type Post {
     name: String!
     published: Boolean!
@@ -8,11 +14,11 @@ export default gql`
 
   input CreatePostInput {
     name: String!
-    published: Boolean! @hasPermission(permissions: ["PUBLISH_POSTS"])
+    published: Boolean @hasRole(roles: ["ADMIN"])
   }
 
   type Query {
-    me: String! @isAuthenticated
+    me: User! @isAuthenticated
     posts: [Post!]! @hasPermission(permissions: ["GET_POSTS"])
   }
 

@@ -15,8 +15,8 @@ const posts = [
 
 export default {
   Query: {
-    me: () => {
-      return "Hey, it's me and I'm logged in!";
+    me: (parent: any, args: any, ctx: any) => {
+      return ctx.user;
     },
     posts: () => posts,
   },

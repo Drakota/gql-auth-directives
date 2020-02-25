@@ -13,14 +13,14 @@ describe("Testing hasRole directive without handler overriding", () => {
     client = createClient({
       typeDefs: gql`
         input TestInput {
-          input: String! @hasRole(roles: ["USER", "ADMIN"])
-          protectedInput: String @hasRole(roles: ["ADMIN"])
+          input: String! @hasRole(roles: ["USER", "ADMIN", "SUPER_ADMIN"])
+          protectedInput: String @hasRole(roles: ["SUPER_ADMIN"])
         }
         type Query {
-          protectedQuery: String! @hasRole(roles: ["USER"])
+          protectedQuery(data: TestInput!): String! @hasRole(roles: ["USER"])
         }
         type Mutation {
-          protectedMutation(data: TestInput!): String!
+          protectedMutation(data: TestInput!): String! @hasRole(roles: ["ADMIN", "SUPER_ADMIN"])
         }
       `,
       resolvers: {
@@ -43,23 +43,33 @@ describe("Testing hasRole directive without handler overriding", () => {
     (getDecodedToken as any) = jest.fn(() => ({ roles: ["USER"] }));
     const res = await client.query({
       query: gql`
-        {
-          protectedQuery
+        query protectedQuery($data: TestInput!) {
+          protectedQuery(data: $data)
         }
       `,
+      variables: {
+        data: {
+          input: "foo",
+        },
+      },
     });
 
     expect(res.data).toMatchSnapshot();
   });
 
   it("should prevent accessing a query without the necessary roles", async () => {
-    (getDecodedToken as any) = jest.fn(() => ({ roles: ["ADMIN"] }));
+    (getDecodedToken as any) = jest.fn(() => ({ roles: ["INVALID_ROLE"] }));
     const res = await client.query({
       query: gql`
-        {
-          protectedQuery
+        query protectedQuery($data: TestInput!) {
+          protectedQuery(data: $data)
         }
       `,
+      variables: {
+        data: {
+          input: "foo",
+        },
+      },
     });
 
     expect(res.errors).toMatchSnapshot();
@@ -76,7 +86,6 @@ describe("Testing hasRole directive without handler overriding", () => {
       variables: {
         data: {
           input: "foo",
-          protectedInput: "bar",
         },
       },
     });
@@ -85,7 +94,7 @@ describe("Testing hasRole directive without handler overriding", () => {
   });
 
   it("should prevent accessing a query's input without necessary roles", async () => {
-    (getDecodedToken as any) = jest.fn(() => ({ roles: ["INVALID_ROLE"] }));
+    (getDecodedToken as any) = jest.fn(() => ({ roles: ["USER"] }));
     const res = await client.query({
       query: gql`
         query protectedQuery($data: TestInput!) {
@@ -103,8 +112,44 @@ describe("Testing hasRole directive without handler overriding", () => {
     expect(res.errors).toMatchSnapshot();
   });
 
-  it("should allow accessing a mutation's input with necessary roles", async () => {
+  it("should allow accessing a mutation with the necessary roles", async () => {
     (getDecodedToken as any) = jest.fn(() => ({ roles: ["ADMIN"] }));
+    const res = await client.mutate({
+      mutation: gql`
+        mutation protectedMutation($data: TestInput!) {
+          protectedMutation(data: $data)
+        }
+      `,
+      variables: {
+        data: {
+          input: "foo",
+        },
+      },
+    });
+
+    expect(res.data).toMatchSnapshot();
+  });
+
+  it("should prevent accessing a mutation without the necessary roles", async () => {
+    (getDecodedToken as any) = jest.fn(() => ({ roles: ["USER"] }));
+    const res = await client.mutate({
+      mutation: gql`
+        mutation protectedMutation($data: TestInput!) {
+          protectedMutation(data: $data)
+        }
+      `,
+      variables: {
+        data: {
+          input: "foo",
+        },
+      },
+    });
+
+    expect(res.errors).toMatchSnapshot();
+  });
+
+  it("should allow accessing a mutation's input with necessary roles", async () => {
+    (getDecodedToken as any) = jest.fn(() => ({ roles: ["SUPER_ADMIN"] }));
     const res = await client.mutate({
       mutation: gql`
         mutation protectedMutation($data: TestInput!) {
@@ -123,7 +168,7 @@ describe("Testing hasRole directive without handler overriding", () => {
   });
 
   it("should prevent accessing a mutation's input without necessary roles", async () => {
-    (getDecodedToken as any) = jest.fn(() => ({ roles: ["INVALID_ROLE"] }));
+    (getDecodedToken as any) = jest.fn(() => ({ roles: ["ADMIN"] }));
     const res = await client.mutate({
       mutation: gql`
         mutation protectedMutation($data: TestInput!) {
@@ -139,24 +184,6 @@ describe("Testing hasRole directive without handler overriding", () => {
     });
 
     expect(res.errors).toMatchSnapshot();
-  });
-
-  it("should allow accessing another mutation's input that is not protected", async () => {
-    (getDecodedToken as any) = jest.fn(() => ({ roles: ["INVALID_ROLE"] }));
-    const res = await client.mutate({
-      mutation: gql`
-        mutation protectedMutation($data: TestInput!) {
-          protectedMutation(data: $data)
-        }
-      `,
-      variables: {
-        data: {
-          input: "foo",
-        },
-      },
-    });
-
-    expect(res.data).toMatchSnapshot();
   });
 });
 
