@@ -149,3 +149,7 @@ type Query {
 ```
 
 > ℹ Notice that you can also use the directives for inputs. If an unauthorized user tries to fill the published field it will throw an error and never reach the resolver.
+
+# License
+
+[MIT](https://github.com/Drakota/gql-auth-directives/blob/master/LICENSE)
