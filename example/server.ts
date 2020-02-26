@@ -15,7 +15,7 @@ const authDirectives = createAuthDirectives({
 });
 const schema = makeExecutableSchema({
   resolvers,
-  typeDefs: [typeDefs, authTypeDefs],
+  typeDefs: [authTypeDefs, typeDefs],
   schemaDirectives: { ...authDirectives },
 });
 
