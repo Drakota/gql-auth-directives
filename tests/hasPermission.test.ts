@@ -9,7 +9,6 @@ describe("Testing hasPermission directive without handler overriding", () => {
   let client: ApolloServerTestClient;
 
   beforeAll(() => {
-    const authDirectives = createAuthDirectives();
     client = createClient({
       typeDefs: gql`
         input TestInput {
@@ -23,19 +22,6 @@ describe("Testing hasPermission directive without handler overriding", () => {
           protectedMutation(data: TestInput!): String!
         }
       `,
-      resolvers: {
-        Query: {
-          protectedQuery: (parent, args) =>
-            `@QUERY Input: ${args.data.input} Protected Input: ${args.data.protectedInput}`,
-        },
-        Mutation: {
-          protectedMutation: (parent, args) =>
-            `@MUTATION Input: ${args.data.input} Protected Input: ${args.data.protectedInput}`,
-        },
-      },
-      schemaDirectives: {
-        ...authDirectives,
-      },
     });
   });
 
@@ -58,7 +44,7 @@ describe("Testing hasPermission directive without handler overriding", () => {
   });
 
   it("should prevent accessing a query without the necessary permissions", async () => {
-    (getDecodedToken as any) = jest.fn(() => ({ permissions: ["INVALID_PERMISSION"] }));
+    (getDecodedToken as any) = jest.fn(() => ({ permissions: ["PROTECTED_INPUT"] }));
     const res = await client.query({
       query: gql`
         query protectedQuery($data: TestInput!) {

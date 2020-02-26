@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Testing isAuthenticated directive with handler overriding should override the isAuthenticated default handler correctly and throw an error 1`] = `
+Array [
+  [GraphQLError: Authorization header: Bearer TOKEN],
+]
+`;
+
+exports[`Testing isAuthenticated directive without handler overriding should allow accessing a mutation authenticated 1`] = `
+Object {
+  "protectedMutation": "@MUTATION Input: foo Protected Input: undefined",
+}
+`;
+
+exports[`Testing isAuthenticated directive without handler overriding should allow accessing a mutation's input authenticated 1`] = `
+Object {
+  "protectedMutation": "@MUTATION Input: foo Protected Input: bar",
+}
+`;
+
+exports[`Testing isAuthenticated directive without handler overriding should allow accessing a query's input authenticated 1`] = `
+Object {
+  "protectedQuery": "@QUERY Input: foo Protected Input: undefined",
+}
+`;

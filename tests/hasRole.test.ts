@@ -9,11 +9,10 @@ describe("Testing hasRole directive without handler overriding", () => {
   let client: ApolloServerTestClient;
 
   beforeAll(() => {
-    const authDirectives = createAuthDirectives();
     client = createClient({
       typeDefs: gql`
         input TestInput {
-          input: String! @hasRole(roles: ["USER", "ADMIN", "SUPER_ADMIN"])
+          input: String!
           protectedInput: String @hasRole(roles: ["SUPER_ADMIN"])
         }
         type Query {
@@ -23,19 +22,6 @@ describe("Testing hasRole directive without handler overriding", () => {
           protectedMutation(data: TestInput!): String! @hasRole(roles: ["ADMIN", "SUPER_ADMIN"])
         }
       `,
-      resolvers: {
-        Query: {
-          protectedQuery: (parent, args) =>
-            `@QUERY Input: ${args.data.input} Protected Input: ${args.data.protectedInput}`,
-        },
-        Mutation: {
-          protectedMutation: (parent, args) =>
-            `@MUTATION Input: ${args.data.input} Protected Input: ${args.data.protectedInput}`,
-        },
-      },
-      schemaDirectives: {
-        ...authDirectives,
-      },
     });
   });
 
@@ -58,7 +44,7 @@ describe("Testing hasRole directive without handler overriding", () => {
   });
 
   it("should prevent accessing a query without the necessary roles", async () => {
-    (getDecodedToken as any) = jest.fn(() => ({ roles: ["INVALID_ROLE"] }));
+    (getDecodedToken as any) = jest.fn(() => ({ roles: ["ADMIN"] }));
     const res = await client.query({
       query: gql`
         query protectedQuery($data: TestInput!) {
