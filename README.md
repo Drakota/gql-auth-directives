@@ -1,6 +1,15 @@
 <p align="center" style="background: #112233; border-radius: 10px; box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);">
     <img src="../assets/logo.png" />
     <br/><br/>
+    <a href="https://github.com/Drakota/gql-auth-directives/blob/master/LICENSE">
+        <img src="https://img.shields.io/github/license/drakota/gql-auth-directives?color=blue" />
+    </a>
+    <a href="https://www.npmjs.com/package/gql-auth-directives">
+        <img src="https://img.shields.io/npm/v/gql-auth-directives" />
+    </a>
+    <a href="https://www.npmjs.com/package/gql-auth-directives?activeTab=dependencies">
+        <img src="https://img.shields.io/david/drakota/gql-auth-directives" />
+    </a>
 </p>
 
 ---

@@ -10,7 +10,8 @@
     "build:watch": "tsc --watch",
     "lint": "eslint --fix src/**/*.ts",
     "test": "jest",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "prepublish": "npm run build"
   },
   "repository": {
     "type": "git",
