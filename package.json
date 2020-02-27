@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Guard your GraphQL API using roles & permissions schema directives.",
   "main": "dist/index.js",
-  "typings": "dist/index.d.ts",
+  "typings": "dist/types/index.d.ts",
   "scripts": {
     "dev": "nodemon -r dotenv/config example/index.ts",
     "build": "tsc",

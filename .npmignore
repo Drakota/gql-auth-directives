@@ -1,0 +1,18 @@
+# Tests
+tests
+
+# Source files
+src
+
+# Coverage directory
+coverage
+
+# Others
+*.tgz
+.env
+.env.test
+.eslintrc.json
+.prettierrc.json
+jest.config.js
+.vscode
+tsconfig.json
