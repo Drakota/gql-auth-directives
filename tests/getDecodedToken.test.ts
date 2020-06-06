@@ -1,5 +1,3 @@
-// import jwt from "jsonwebtoken";
-
 import { getDecodedToken } from "../src/utils/getDecodedToken";
 
 describe("Testing the getDecodedToken function", () => {
