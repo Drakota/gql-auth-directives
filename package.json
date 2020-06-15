@@ -51,7 +51,7 @@
   "dependencies": {
     "graphql": "^14.6.0",
     "graphql-tag": "^2.10.3",
-    "graphql-tools": "^4.0.6",
+    "graphql-tools": "^6.0.9",
     "jsonwebtoken": "^8.5.1"
   }
 }
