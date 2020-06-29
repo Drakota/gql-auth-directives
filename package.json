@@ -29,7 +29,7 @@
   },
   "homepage": "https://github.com/Drakota/gql-auth-directives#readme",
   "devDependencies": {
-    "@types/jest": "^25.1.3",
+    "@types/jest": "^26.0.3",
     "@types/jsonwebtoken": "^8.3.7",
     "@typescript-eslint/eslint-plugin": "^2.20.0",
     "@typescript-eslint/parser": "^2.20.0",
