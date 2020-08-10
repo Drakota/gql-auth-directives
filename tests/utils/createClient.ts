@@ -13,6 +13,13 @@ export const createClient = (
       Query: {
         protectedQuery: (parent, args) =>
           `@QUERY Input: ${args.data.input} Protected Input: ${args.data.protectedInput}`,
+        unprotectedQuery: () => ({
+          field: "field",
+          protectedFieldWithoutResolver: "protectedFieldWithoutResolver",
+        }),
+      },
+      TestResponse: {
+        protectedFieldWithResolver: () => "protectedFieldWithResolver",
       },
       Mutation: {
         protectedMutation: (parent, args) =>

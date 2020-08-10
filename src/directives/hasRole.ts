@@ -1,4 +1,4 @@
-import { GraphQLField, GraphQLInputField, GraphQLInputObjectType } from "graphql";
+import { GraphQLField, GraphQLInputField, GraphQLInputObjectType, defaultFieldResolver } from "graphql";
 import { SchemaDirectiveVisitor } from "graphql-tools";
 
 import { hasRoleHandler } from "../defaultHandlers";
@@ -8,13 +8,13 @@ export default (overiddeHandler: ((ctx: any, roles: string[]) => void) | undefin
 
   return class HasRoleDirective extends SchemaDirectiveVisitor {
     public visitFieldDefinition(field: GraphQLField<any, any>): void {
-      const { resolve } = field;
+      const { resolve = defaultFieldResolver } = field;
       const { roles } = this.args;
 
       field.resolve = async function(...args) {
         const ctx = args[2];
         handler(ctx, roles);
-        return resolve!.apply(this, args);
+        return resolve.apply(this, args);
       };
     }
 

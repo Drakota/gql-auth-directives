@@ -23,3 +23,19 @@ Object {
   "protectedQuery": "@QUERY Input: foo Protected Input: undefined",
 }
 `;
+
+exports[`Testing isAuthenticated directive without handler overriding should allow accessing a type's field with a resolver authenticated 1`] = `
+Object {
+  "unprotectedQuery": Object {
+    "protectedFieldWithResolver": "protectedFieldWithResolver",
+  },
+}
+`;
+
+exports[`Testing isAuthenticated directive without handler overriding should allow accessing a type's field without a resolver authenticated 1`] = `
+Object {
+  "unprotectedQuery": Object {
+    "protectedFieldWithoutResolver": "protectedFieldWithoutResolver",
+  },
+}
+`;

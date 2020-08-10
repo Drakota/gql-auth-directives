@@ -15,8 +15,14 @@ describe("Testing hasPermission directive without handler overriding", () => {
           input: String!
           protectedInput: String @hasPermission(permissions: ["PROTECTED_INPUT"])
         }
+        type TestResponse {
+          field: String!
+          protectedFieldWithoutResolver: String @hasPermission(permissions: ["PROTECTED_FIELD"])
+          protectedFieldWithResolver: String @hasPermission(permissions: ["PROTECTED_FIELD"])
+        }
         type Query {
           protectedQuery(data: TestInput!): String! @hasPermission(permissions: ["PROTECTED_QUERY"])
+          unprotectedQuery: TestResponse!
         }
         type Mutation {
           protectedMutation(data: TestInput!): String!
@@ -153,6 +159,66 @@ describe("Testing hasPermission directive without handler overriding", () => {
     });
 
     expect(res.data).toMatchSnapshot();
+  });
+
+  it("should allow accessing a type's field without a resolver with the necessary permissions", async () => {
+    (getDecodedToken as any) = jest.fn(() => ({ permissions: ["PROTECTED_FIELD"] }));
+    const res = await client.query({
+      query: gql`
+        {
+          unprotectedQuery {
+            protectedFieldWithoutResolver
+          }
+        }
+      `,
+    });
+
+    expect(res.data).toMatchSnapshot();
+  });
+
+  it("should allow accessing a type's field with a resolver with the necessary permissions", async () => {
+    (getDecodedToken as any) = jest.fn(() => ({ permissions: ["PROTECTED_FIELD"] }));
+    const res = await client.query({
+      query: gql`
+        {
+          unprotectedQuery {
+            protectedFieldWithResolver
+          }
+        }
+      `,
+    });
+
+    expect(res.data).toMatchSnapshot();
+  });
+
+  it("should allow accessing a type's field without a resolver without the necessary permissions", async () => {
+    (getDecodedToken as any) = jest.fn(() => ({ permissions: [] }));
+    const res = await client.query({
+      query: gql`
+        {
+          unprotectedQuery {
+            protectedFieldWithoutResolver
+          }
+        }
+      `,
+    });
+
+    expect(res.errors).toMatchSnapshot();
+  });
+
+  it("should allow accessing a type's field with a resolver without the necessary permissions", async () => {
+    (getDecodedToken as any) = jest.fn(() => ({ permissions: [] }));
+    const res = await client.query({
+      query: gql`
+        {
+          unprotectedQuery {
+            protectedFieldWithResolver
+          }
+        }
+      `,
+    });
+
+    expect(res.errors).toMatchSnapshot();
   });
 });
 
