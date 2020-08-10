@@ -9,7 +9,7 @@ export default gql`
 
   type Post {
     name: String!
-    published: Boolean!
+    published: Boolean! @hasRole(roles: ["ADMIN"])
   }
 
   input CreatePostInput {

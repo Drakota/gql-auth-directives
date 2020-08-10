@@ -30,6 +30,34 @@ Object {
 }
 `;
 
+exports[`Testing hasRole directive without handler overriding should allow accessing a type's field with a resolver with the necessary roles 1`] = `
+Object {
+  "unprotectedQuery": Object {
+    "protectedFieldWithResolver": "protectedFieldWithResolver",
+  },
+}
+`;
+
+exports[`Testing hasRole directive without handler overriding should allow accessing a type's field with a resolver without the necessary roles 1`] = `
+Array [
+  [GraphQLError: Insufficient roles. Missing one of these: ADMIN],
+]
+`;
+
+exports[`Testing hasRole directive without handler overriding should allow accessing a type's field without a resolver with the necessary roles 1`] = `
+Object {
+  "unprotectedQuery": Object {
+    "protectedFieldWithoutResolver": "protectedFieldWithoutResolver",
+  },
+}
+`;
+
+exports[`Testing hasRole directive without handler overriding should allow accessing a type's field without a resolver without the necessary roles 1`] = `
+Array [
+  [GraphQLError: Insufficient roles. Missing one of these: ADMIN],
+]
+`;
+
 exports[`Testing hasRole directive without handler overriding should prevent accessing a mutation without the necessary roles 1`] = `
 Array [
   [GraphQLError: Insufficient roles. Missing one of these: ADMIN, SUPER_ADMIN],

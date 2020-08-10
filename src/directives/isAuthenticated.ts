@@ -1,4 +1,4 @@
-import { GraphQLField, GraphQLInputField, GraphQLInputObjectType } from "graphql";
+import { GraphQLField, GraphQLInputField, GraphQLInputObjectType, defaultFieldResolver } from "graphql";
 import { SchemaDirectiveVisitor } from "graphql-tools";
 
 import { isAuthenticatedHandler } from "../defaultHandlers";
@@ -8,12 +8,12 @@ export default (overiddeHandler: ((ctx: any) => void) | undefined) => {
 
   return class IsAuthenticatedDirective extends SchemaDirectiveVisitor {
     public visitFieldDefinition(field: GraphQLField<any, any>): void {
-      const { resolve } = field;
+      const { resolve = defaultFieldResolver } = field;
 
       field.resolve = async function(...args) {
         const ctx = args[2];
         handler(ctx);
-        return resolve!.apply(this, args);
+        return resolve.apply(this, args);
       };
     }
 

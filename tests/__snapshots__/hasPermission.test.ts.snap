@@ -24,6 +24,34 @@ Object {
 }
 `;
 
+exports[`Testing hasPermission directive without handler overriding should allow accessing a type's field with a resolver with the necessary permissions 1`] = `
+Object {
+  "unprotectedQuery": Object {
+    "protectedFieldWithResolver": "protectedFieldWithResolver",
+  },
+}
+`;
+
+exports[`Testing hasPermission directive without handler overriding should allow accessing a type's field with a resolver without the necessary permissions 1`] = `
+Array [
+  [GraphQLError: Insufficient permissions. Missing one of these: PROTECTED_FIELD],
+]
+`;
+
+exports[`Testing hasPermission directive without handler overriding should allow accessing a type's field without a resolver with the necessary permissions 1`] = `
+Object {
+  "unprotectedQuery": Object {
+    "protectedFieldWithoutResolver": "protectedFieldWithoutResolver",
+  },
+}
+`;
+
+exports[`Testing hasPermission directive without handler overriding should allow accessing a type's field without a resolver without the necessary permissions 1`] = `
+Array [
+  [GraphQLError: Insufficient permissions. Missing one of these: PROTECTED_FIELD],
+]
+`;
+
 exports[`Testing hasPermission directive without handler overriding should allow accessing another mutation's input that is not protected 1`] = `
 Object {
   "protectedMutation": "@MUTATION Input: foo Protected Input: undefined",

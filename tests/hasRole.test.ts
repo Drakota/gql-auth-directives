@@ -15,8 +15,14 @@ describe("Testing hasRole directive without handler overriding", () => {
           input: String!
           protectedInput: String @hasRole(roles: ["SUPER_ADMIN"])
         }
+        type TestResponse {
+          field: String!
+          protectedFieldWithoutResolver: String @hasRole(roles: ["ADMIN"])
+          protectedFieldWithResolver: String @hasRole(roles: ["ADMIN"])
+        }
         type Query {
           protectedQuery(data: TestInput!): String! @hasRole(roles: ["USER"])
+          unprotectedQuery: TestResponse!
         }
         type Mutation {
           protectedMutation(data: TestInput!): String! @hasRole(roles: ["ADMIN", "SUPER_ADMIN"])
@@ -167,6 +173,66 @@ describe("Testing hasRole directive without handler overriding", () => {
           protectedInput: "bar",
         },
       },
+    });
+
+    expect(res.errors).toMatchSnapshot();
+  });
+
+  it("should allow accessing a type's field without a resolver with the necessary roles", async () => {
+    (getDecodedToken as any) = jest.fn(() => ({ roles: ["ADMIN"] }));
+    const res = await client.query({
+      query: gql`
+        {
+          unprotectedQuery {
+            protectedFieldWithoutResolver
+          }
+        }
+      `,
+    });
+
+    expect(res.data).toMatchSnapshot();
+  });
+
+  it("should allow accessing a type's field with a resolver with the necessary roles", async () => {
+    (getDecodedToken as any) = jest.fn(() => ({ roles: ["ADMIN"] }));
+    const res = await client.query({
+      query: gql`
+        {
+          unprotectedQuery {
+            protectedFieldWithResolver
+          }
+        }
+      `,
+    });
+
+    expect(res.data).toMatchSnapshot();
+  });
+
+  it("should allow accessing a type's field without a resolver without the necessary roles", async () => {
+    (getDecodedToken as any) = jest.fn(() => ({ roles: [] }));
+    const res = await client.query({
+      query: gql`
+        {
+          unprotectedQuery {
+            protectedFieldWithoutResolver
+          }
+        }
+      `,
+    });
+
+    expect(res.errors).toMatchSnapshot();
+  });
+
+  it("should allow accessing a type's field with a resolver without the necessary roles", async () => {
+    (getDecodedToken as any) = jest.fn(() => ({ roles: [] }));
+    const res = await client.query({
+      query: gql`
+        {
+          unprotectedQuery {
+            protectedFieldWithResolver
+          }
+        }
+      `,
     });
 
     expect(res.errors).toMatchSnapshot();

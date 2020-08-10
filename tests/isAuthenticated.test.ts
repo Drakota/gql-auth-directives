@@ -18,8 +18,14 @@ describe("Testing isAuthenticated directive without handler overriding", () => {
             input: String!
             protectedInput: String @isAuthenticated
           }
+          type TestResponse {
+            field: String!
+            protectedFieldWithoutResolver: String @isAuthenticated
+            protectedFieldWithResolver: String @isAuthenticated
+          }
           type Query {
             protectedQuery(data: TestInput!): String!
+            unprotectedQuery: TestResponse!
           }
           type Mutation {
             protectedMutation(data: TestInput!): String! @isAuthenticated
@@ -83,6 +89,34 @@ describe("Testing isAuthenticated directive without handler overriding", () => {
           protectedInput: "bar",
         },
       },
+    });
+
+    expect(res.data).toMatchSnapshot();
+  });
+
+  it("should allow accessing a type's field without a resolver authenticated", async () => {
+    const res = await client.query({
+      query: gql`
+        {
+          unprotectedQuery {
+            protectedFieldWithoutResolver
+          }
+        }
+      `,
+    });
+
+    expect(res.data).toMatchSnapshot();
+  });
+
+  it("should allow accessing a type's field with a resolver authenticated", async () => {
+    const res = await client.query({
+      query: gql`
+        {
+          unprotectedQuery {
+            protectedFieldWithResolver
+          }
+        }
+      `,
     });
 
     expect(res.data).toMatchSnapshot();
